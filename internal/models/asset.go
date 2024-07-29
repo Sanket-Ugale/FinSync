@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"gorm.io/gorm"
@@ -51,25 +52,53 @@ func CalculatePortfolioValue(portfolioID uint) (float64, error) {
 	return totalValue, err
 }
 
+// func CalculatePortfolioReturn(portfolioID uint, startDate time.Time, endDate time.Time) (float64, error) {
+// 	var startValue, endValue float64
+
+// 	err := DB.Model(&AssetHistory{}).
+// 		Joins("JOIN assets ON asset_histories.asset_id = assets.id").
+// 		Where("assets.portfolio_id = ? AND asset_histories.date = ?", portfolioID, startDate).
+// 		Select("SUM(asset_histories.value * assets.quantity)").
+// 		Scan(&startValue).Error
+// 	if err != nil {
+// 		return 0, err
+// 	}
+
+// 	err = DB.Model(&AssetHistory{}).
+// 		Joins("JOIN assets ON asset_histories.asset_id = assets.id").
+// 		Where("assets.portfolio_id = ? AND asset_histories.date = ?", portfolioID, endDate).
+// 		Select("SUM(asset_histories.value * assets.quantity)").
+// 		Scan(&endValue).Error
+// 	if err != nil {
+// 		return 0, err
+// 	}
+
+// 	return (endValue - startValue) / startValue, nil
+// }
+
 func CalculatePortfolioReturn(portfolioID uint, startDate time.Time, endDate time.Time) (float64, error) {
 	var startValue, endValue float64
 
 	err := DB.Model(&AssetHistory{}).
 		Joins("JOIN assets ON asset_histories.asset_id = assets.id").
 		Where("assets.portfolio_id = ? AND asset_histories.date = ?", portfolioID, startDate).
-		Select("SUM(asset_histories.value * assets.quantity)").
+		Select("COALESCE(SUM(asset_histories.value * assets.quantity), 0)").
 		Scan(&startValue).Error
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("error calculating start value: %w", err)
 	}
 
 	err = DB.Model(&AssetHistory{}).
 		Joins("JOIN assets ON asset_histories.asset_id = assets.id").
 		Where("assets.portfolio_id = ? AND asset_histories.date = ?", portfolioID, endDate).
-		Select("SUM(asset_histories.value * assets.quantity)").
+		Select("COALESCE(SUM(asset_histories.value * assets.quantity), 0)").
 		Scan(&endValue).Error
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("error calculating end value: %w", err)
+	}
+
+	if startValue == 0 {
+		return 0, fmt.Errorf("start value is zero, cannot calculate return")
 	}
 
 	return (endValue - startValue) / startValue, nil

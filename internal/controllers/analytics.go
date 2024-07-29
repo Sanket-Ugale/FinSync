@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -62,7 +63,8 @@ func GetPortfolioReturn(c *gin.Context) {
 
 	returnValue, err := models.CalculatePortfolioReturn(uint(portfolioID), startDate, endDate)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to calculate portfolio return"})
+		log.Printf("Failed to calculate portfolio return: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to calculate portfolio return", "details": err.Error()})
 		return
 	}
 
