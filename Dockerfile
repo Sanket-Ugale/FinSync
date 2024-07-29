@@ -14,7 +14,7 @@ COPY go.mod go.sum ./
 COPY . .
 
 # Build the Go app
-RUN go build -o main .
+# RUN go build -o main .
 
 # Start a new stage from scratch
 FROM golang:1.18
