@@ -1,5 +1,5 @@
 # Start a new stage from scratch
-FROM golang:1.18
+FROM golang:1.18 as builder
 
 WORKDIR /app
 
