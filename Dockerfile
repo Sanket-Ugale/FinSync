@@ -1,5 +1,5 @@
 # Use the official Golang image to create a build artifact
-FROM golang:1.18 as builder
+FROM golang:1.20 as builder
 
 # Set the Current Working Directory inside the container
 WORKDIR /app
@@ -17,7 +17,7 @@ COPY . .
 RUN go build -o main .
 
 # Start a new stage from scratch
-FROM golang:1.18
+FROM golang:1.20
 
 # Set the Current Working Directory inside the container
 WORKDIR /app
