@@ -23,7 +23,7 @@ FROM golang:1.18
 WORKDIR /app
 
 # Copy the Pre-built binary file from the previous stage
-COPY --from=builder /app/cmd/main .
+COPY --from=builder /app/main .
 
 # Copy templates directory if you have HTML templates
 COPY --from=builder /app/templates ./templates
