@@ -1,26 +1,13 @@
 version: '3.8'
 
 services:
-  app:
+  finsync:
     build: .
     ports:
-      - "${PORT}:${PORT}"
+      - "80:80"
     env_file:
       - .env
-    depends_on:
-      - redis
     volumes:
-      - .:/app
-    networks:
-      - app-network
-
-  redis:
-    image: "redis:alpine"
-    ports:
-      - "6379:6379"
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
+      - ./assets:/root/assets
+      - ./templates:/root/templates
+    restart: always
