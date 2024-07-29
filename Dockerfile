@@ -1,7 +1,7 @@
 # Use the official Golang image to create a build artifact.
 # This build stage installs dependencies, builds the application,
 # and performs any other necessary steps.
-FROM golang:1.18-alpine AS builder
+FROM golang:1.18
 
 # Set the Current Working Directory inside the container
 WORKDIR /app
@@ -20,7 +20,7 @@ RUN go build -o main .
 
 # Use a minimal image to run the built binary.
 # This image will only contain the compiled binary and the assets required to run it.
-FROM alpine:latest
+# FROM alpine:latest
 
 # Set the Current Working Directory inside the container
 WORKDIR /root/
