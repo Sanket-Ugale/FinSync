@@ -12,8 +12,23 @@ import (
 )
 
 func main() {
-	// Load .env file (optional in production)
-	err := godotenv.Load()
+	// Load .env file - try multiple locations for different deployment methods
+	var err error
+	
+	// Try Render's Secret Files location first
+	if _, err := os.Stat("/etc/secrets/.env"); err == nil {
+		err = godotenv.Load("/etc/secrets/.env")
+		if err == nil {
+			log.Println("Loaded environment from Render Secret Files")
+		}
+	} else {
+		// Fallback to local .env file (for development)
+		err = godotenv.Load()
+		if err == nil {
+			log.Println("Loaded local .env file")
+		}
+	}
+	
 	if err != nil {
 		log.Println("No .env file found, using environment variables")
 	}
