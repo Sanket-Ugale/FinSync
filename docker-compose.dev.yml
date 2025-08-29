@@ -1,0 +1,39 @@
+version: '3.8'
+
+# Development Docker Compose override
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+      - go_modules:/go/pkg/mod
+    environment:
+      - PORT=8080
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/finsync?sslmode=disable
+      - REDIS_URL=redis:6379
+    ports:
+      - "8080:8080"
+    command: go run main.go
+    
+  postgres:
+    environment:
+      - POSTGRES_DB=finsync_dev
+    ports:
+      - "5433:5432"  # Different port to avoid conflicts
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      
+  redis:
+    ports:
+      - "6380:6379"  # Different port to avoid conflicts
+    volumes:
+      - redis_dev_data:/data
+
+volumes:
+  go_modules:
+  postgres_dev_data:
+  redis_dev_data:

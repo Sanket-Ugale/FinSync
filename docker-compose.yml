@@ -1,18 +1,48 @@
-version: '3.8'
-
 services:
   app:
     build: .
     ports:
-      - "${PORT}:${PORT}"
+      - "${PORT:-8080}:${PORT:-8080}"
     env_file:
       - .env
     depends_on:
+      - postgres
       - redis
     volumes:
       - .:/app
     networks:
       - app-network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: finsync_postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-finsync}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: finsync_redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
 
 networks:
   app-network:

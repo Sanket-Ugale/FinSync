@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/Sanket-Ugale/FinSync/internal/controllers"
 	"github.com/Sanket-Ugale/FinSync/internal/middleware"
@@ -74,5 +75,11 @@ func main() {
 		api.GET("/portfolio/:id/return", controllers.GetPortfolioReturn)
 	}
 
-	r.Run("0.0.0.0:80")
+	// Get port from environment variable, default to 8080
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	r.Run("0.0.0.0:" + port)
 }

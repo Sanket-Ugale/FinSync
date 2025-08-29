@@ -1,39 +1,125 @@
-# Neosurge Portfolio Management Service
+# FinSync - Portfolio Management Service
 
-This is a simplified portfolio management service.
+This is a comprehensive portfolio management service built with Go, PostgreSQL, and Redis.
 
 ## Features
 
-- User management (registration, authentication)
+- User management (registration, authentication with OTP)
 - Portfolio management (create, update, delete portfolios)
 - Asset tracking (add, update, remove assets)
 - Basic analytics (total portfolio value, average return)
+- JWT-based authentication
+- Email notifications with OTP verification
+- Docker support for easy deployment
 
 ## Prerequisites
 
-- Go 1.16 or higher
-- PostgreSQL
-- Redis
+- Docker and Docker Compose
+- Go 1.20+ (for local development)
 
-## Setup
+## Quick Start with Docker
 
-1. Clone the repository:
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/sanket-ugale/FinSync.git
+   cd FinSync
+   ```
 
-git clone https://github.com/sanket-ugale/FinSync.git
+2. **Set up environment variables:**
+   ```bash
+   cp .env.example .env
+   ```
+   Update the `.env` file with your configuration (especially SMTP settings).
 
-cd FinSync
+3. **Start the application:**
+   ```bash
+   # Using make (recommended)
+   make up
+   
+   # Or using docker-compose directly
+   docker-compose up -d
+   ```
 
-2. Install dependencies:
-go mod tidy
+4. **View logs:**
+   ```bash
+   make logs
+   # Or: docker-compose logs -f
+   ```
 
-3. Set up the environment variables:
-- Copy the `.env.example` file to `.env`
-- Fill in the required information in the `.env` file
+The server will start on `http://localhost:8080`.
 
-4. Run the application:
-go run main.go
+## Development Setup
 
-The server will start on `http://localhost:80`.
+For development with hot reload:
+
+```bash
+# Start in development mode
+make dev
+
+# Or using docker-compose
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+```
+
+## Database Management
+
+```bash
+# Connect to PostgreSQL shell
+make db-shell
+
+# Connect to Redis CLI
+make redis-cli
+```
+
+## Local Development (without Docker)
+
+If you prefer to run locally:
+
+1. **Install dependencies:**
+   ```bash
+   go mod tidy
+   ```
+
+2. **Set up PostgreSQL and Redis locally**
+
+3. **Update .env file** with local database URLs:
+   ```
+   DATABASE_URL=postgresql://username:password@localhost:5432/finsync?sslmode=disable
+   REDIS_URL=localhost:6379
+   ```
+
+4. **Run the application:**
+   ```bash
+   go run main.go
+   ```
+
+## Docker Services
+
+The application includes the following services:
+
+- **app**: Main Go application (port 8080)
+- **postgres**: PostgreSQL 15 database (port 5432)
+- **redis**: Redis cache (port 6379)
+
+## Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `PORT` | Application port | 8080 |
+| `DATABASE_URL` | PostgreSQL connection string | - |
+| `REDIS_URL` | Redis connection string | - |
+| `JWT_SECRET` | JWT signing secret | - |
+| `SMTP_*` | Email configuration | - |
+
+## Available Make Commands
+
+- `make build` - Build Docker containers
+- `make up` - Start application (production)
+- `make dev` - Start in development mode
+- `make down` - Stop application
+- `make logs` - View logs
+- `make clean` - Clean up containers and volumes
+- `make db-shell` - Connect to PostgreSQL
+- `make redis-cli` - Connect to Redis CLI
 
 ## API Documentation
 

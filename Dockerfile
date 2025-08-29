@@ -14,13 +14,16 @@ RUN go mod download
 COPY . .
 
 # Build the Go app
-RUN go build -o main .
+RUN CGO_ENABLED=0 GOOS=linux go build -o main .
 
 # Start a new stage from scratch
-FROM golang:1.20
+FROM alpine:latest
+
+# Install ca-certificates for HTTPS requests
+RUN apk --no-cache add ca-certificates
 
 # Set the Current Working Directory inside the container
-WORKDIR /app
+WORKDIR /root/
 
 # Copy the Pre-built binary file from the previous stage
 COPY --from=builder /app/main .
@@ -34,8 +37,8 @@ COPY --from=builder /app/.env ./.env
 # Copy the assets directory
 COPY --from=builder /app/assets/ ./assets
 
-# Expose port 80 to the outside world
-EXPOSE 80
+# Expose port 8080 to the outside world
+EXPOSE 8080
 
 # Command to run the executable
 CMD ["./main"]
