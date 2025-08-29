@@ -31,9 +31,6 @@ COPY --from=builder /app/main .
 # Copy templates directory if you have HTML templates
 COPY --from=builder /app/templates ./templates
 
-# Copy .env file
-COPY --from=builder /app/.env ./.env
-
 # Copy the assets directory
 COPY --from=builder /app/assets/ ./assets
 

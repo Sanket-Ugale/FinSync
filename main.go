@@ -12,16 +12,16 @@ import (
 )
 
 func main() {
-	// Load .env file
+	// Load .env file (optional in production)
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Println("No .env file found, using environment variables")
 	}
 
 	// Initialize database
 	models.InitDB()
 
-	// Initialize Redis
+	// Initialize Redis (optional for some deployments)
 	models.InitRedis()
 
 	// Set up Gin router
@@ -40,6 +40,15 @@ func main() {
 	// Serve index.html
 	r.GET("/", func(c *gin.Context) {
 		c.File("./templates/index.html")
+	})
+
+	// Health check endpoint
+	r.GET("/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"status": "healthy",
+			"service": "FinSync API",
+			"version": "1.0.0",
+		})
 	})
 
 	// Routes
